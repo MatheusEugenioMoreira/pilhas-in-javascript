@@ -1,0 +1,271 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+ <head>
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KTHB9TD');</script>
+<!-- End Google Tag Manager -->
+  <title>Simulador: Pilha (Stack)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="author" content="Virgilio Borges de Oliveira">
+  <meta name="keywords" content="pilha, lifo, stack, estruturas de dados, estrutura de dados, algoritmos, pop, push">
+  <meta name="description" content="Simulador on-line da estrutura de dados do tipo Pilha (LIFO).">
+  <meta property="og:site_name" content="Professor Virgilio Borges">
+  <meta property="og:title" content="Simulador: Pilha (LIFO)">
+  <meta property="og:description" content="Simulador on-line da estrutura de dados do tipo Pilha (LIFO).">
+  <meta property="og:image" itemprop="image" content="http://virgilioborges.com.br/images/vbo.jpg">
+  <meta property="og:type" content="website">  
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+  table {
+  	border-collapse: collapse;
+  	font-size: 120%;
+  }
+  .valor {
+	padding: 4px 6px;
+	width: 2em;
+	text-align: center;
+  }
+  .borda {
+  	border: 1px solid black;
+  }
+  .right {
+  	text-align: right;
+  }
+  .indice {
+  	padding-right: 5px;
+	font-size: 70%;
+  }
+  .campo {
+    width: 4em;
+	text-align: center;
+  }
+  .invalido {
+  	color: #ffcece;
+  }
+  #log {
+    height: 10em;
+	width: 60%;
+	overflow: scroll;
+	border: 1px solid black;
+	padding: 4px 6px;
+  }
+  </style>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  <script type="text/javascript">
+    var topo = 0;
+	var tamanho = 0;
+	$(document).ready(function() {
+		drawStack(5);
+
+		$('#btcriar').click(function() {
+			let tam = $('#txttamanho').val().trim();
+			if(!isNaN(tam) && tam != '' && parseInt(tam) > 0 && parseInt(tam) < 21) {
+				drawStack(parseInt(tam));
+				$('#btlimpar').click();
+			}
+			else
+				log("Valor inválido para o tamanho!");
+		});
+
+		$('#btempilhar').click(function() {
+			let val = $('#txtvalor').val().trim();
+			if(!isNaN(val) && val != '' && parseInt(val) > -1000 && parseInt(val) < 1000) {
+				if(!empilhar(parseInt(val))) 
+					log("Erro: pilha cheia!");
+			}
+			else
+				log("Valor inválido!");
+		});
+
+		$('#btaleatorio').click(function() {
+			$('#txtvalor').val(Math.floor(Math.random() * 100));
+			$('#btempilhar').click();
+		});
+
+		$('#btdesempilhar').click(function() {
+			if((val = desempilhar()) !== false)
+				log(val);
+			else
+				log("Erro: pilha vazia!");
+		});
+
+		$('#btadd').click(function() {
+			operacaoBinaria('+');
+		});
+
+		$('#btsub').click(function() {
+			operacaoBinaria('-');
+		});
+
+		$('#btmul').click(function() {
+			operacaoBinaria('*');
+		});
+
+		$('#btdiv').click(function() {
+			operacaoBinaria('/');
+		});
+
+		$('#btinc').click(function() {
+			operacaoUnaria('++');
+		});
+
+		$('#btdec').click(function() {
+			operacaoUnaria('--');
+		});
+
+		$('#btlimpar').click(function() {
+			$('#log').empty();
+		});
+
+		$('#txtvalor').focus(function() {
+			$('#txtvalor').select();
+		});
+	});	
+
+	function empilhar(val) {
+		if(topo < tamanho) {
+			$('#v' + topo).text(parseInt(val)).removeClass('invalido');
+			$('#s' + topo).html('');
+			topo++;
+			$('#s' + topo).html('TOPO &rarr;');
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	function desempilhar() {
+		if(topo > 0) {
+			$('#s' + topo).html('');
+			topo--;
+			$('#s' + topo).html('TOPO &rarr;');
+			return(parseInt($('#v' + topo).addClass('invalido').text()));
+		}
+		else {
+			return false;
+		}
+	}
+
+	function operacaoBinaria(op) {
+		let y = desempilhar();
+		if(y !== false) {
+			let x = desempilhar();
+			if(x !== false) {
+				let r = parseInt(eval(x + op + y));
+				log(r);
+				empilhar(r);
+			}
+			else {
+				empilhar(y);
+				log("Erro: faltam elementos!");
+			}
+		}
+		else 
+			log("Erro: pilha vazia!");
+	}
+
+	function operacaoUnaria(op) {
+		let x = desempilhar();
+		if(x !== false) {
+			eval(op + 'x');
+			log(x);
+			empilhar(x);
+		}
+		else 
+			log("Erro: pilha vazia!");
+	}
+
+	function drawStack(size) {
+		$("#tpilha").find('tbody')
+			.empty()
+			.append($('<tr>')
+				.append($('<td id="s' + size + '" class="right">')
+					.text('')
+				)
+				.append($('<td id="i' + size + '" class="indice right">')
+					.text(size)
+				)
+				.append($('<td id="v' + size + '" class="valor">')
+					.html('&nbsp;')
+				)
+			);
+		for(i = size - 1; i > -1; i--) {
+			$("#tpilha").find('tbody')
+				.append($('<tr>')
+					.append($('<td id="s' + i + '" class="right">')
+						.text('')
+					)
+					.append($('<td id="i' + i + '" class="indice right">')
+						.text(i)
+					)
+					.append($('<td id="v' + i + '" class="valor borda invalido">')
+						.html(Math.floor(Math.random() * 100))
+					)
+				);
+		}
+		topo = 0;
+		tamanho = size;
+		$('#s' + topo).html('TOPO &rarr;');
+	}
+
+	function log(msg) {
+		$('#log').html(msg + "<br>" + $('#log').html());
+	}
+  </script>
+ </head>
+
+ <body>
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KTHB9TD"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+ <div class="container-fluid">
+ <h3>Estrutura Pilha (LIFO)</h3>
+ <br>
+ <div class="input-group input-group-sm">
+	<div class="input-group-prepend">
+		<label class="input-group-text" for="txttamanho">Tamanho:&nbsp;</label>
+	</div>
+	<input class="campo" type="number" id="txttamanho" value="5" min="1" max="20">
+	<input type="button" class="btn btn-outline-primary btn-sm" id="btcriar" value="Criar">
+ </div>
+ <br>
+ <div class="input-group input-group-sm">
+	<div class="input-group-prepend">
+		<label class="input-group-text" for="txtvalor">Valor:&nbsp;</label>
+	</div>
+	<input type="number" class="campo" id="txtvalor" min="-999" max="999">
+	<input type="button" class="btn btn--primary btn-sm" id="btempilhar" value="Empilhar">
+	<input type="button" class="btn btn-primary btn-sm" id="btaleatorio" value="Empilhar Aleatório">
+ </div>
+ <br>
+ <div class="input-group">
+	<input class="btn btn-primary btn-sm" type="button" id="btdesempilhar" value="Desempilhar">
+	<input class="btn btn-success btn-sm" type="button" id="btadd" value="&nbsp;&nbsp;+&nbsp;&nbsp;">
+	<input class="btn btn-success btn-sm" type="button" id="btsub" value="&nbsp;&nbsp;-&nbsp;&nbsp;">
+	<input class="btn btn-success btn-sm" type="button" id="btmul" value="&nbsp;&nbsp;*&nbsp;&nbsp;">
+	<input class="btn btn-success btn-sm" type="button" id="btdiv" value="&nbsp;&nbsp;/&nbsp;&nbsp;">
+	<input class="btn btn-danger btn-sm" type="button" id="btinc" value="&nbsp;INC&nbsp;">
+	<input class="btn btn-danger btn-sm" type="button" id="btdec" value="&nbsp;DEC&nbsp;">
+ </div>
+ <br>
+ <div id="canvas">
+	<table id="tpilha">
+	<tbody>
+	</tbody>
+	</table>
+ </div>
+ <br>
+ <h4>Saída:</h4>
+ <div id="log">
+ </div>
+ <input class="btn btn-outline-primary btn-sm" type="button" id="btlimpar" value="Limpar">
+ </div>
+ </body>
+</html>
